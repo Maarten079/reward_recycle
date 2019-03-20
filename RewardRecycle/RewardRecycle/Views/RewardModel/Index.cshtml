@@ -1,0 +1,92 @@
+﻿@model IEnumerable<RewardRecycle.Models.RewardModel>
+
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Authorization
+@inject SignInManager<ApplicationUserModel> SignInManager
+@inject UserManager<ApplicationUserModel> UserManager
+@inject IAuthorizationService AuthorizationService
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var user = await UserManager.GetUserAsync(User);
+}
+
+<div class="alert alert-success" role="alert" id="succesAlert" hidden ="hidden" style="margin-top: 10px">
+    Your order has been placed.
+</div>
+<h2>Index</h2>
+<script>
+    var message = window.location.hash;
+
+    if (message == "#succes") {
+        document.getElementById("succesAlert").removeAttribute("hidden");
+    }
+</script>
+@if (SignInManager.IsSignedIn(User))
+{
+    <p>
+        you have: @user.Points points!
+    </p>
+}
+@if ((await AuthorizationService.AuthorizeAsync(User, "ImTheAdmin")).Succeeded)
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success">Create New</a>
+        <a asp-action="OrderOverview" class="btn btn-info">Order Overview</a>
+    </p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ImagePath)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ImagePath)
+                </td>
+                @if ((await AuthorizationService.AuthorizeAsync(User, "ImTheAdmin")).Succeeded)
+                {
+                    <td>
+                        <a asp-action="Edit" class="btn btn-warning" asp-route-id="@item.Id">Edit</a>
+                        <a asp-action="Details" class="btn btn-info" asp-route-id="@item.Id">Details</a>
+                        <a asp-action="Delete" class="btn btn-danger" asp-route-id="@item.Id">Delete</a>
+
+
+                    </td>
+                }
+                <td>
+                    @if (@user.Points >= item.Price)
+                    {
+                        <a asp-action="Order" class="btn btn-success" asp-route-id="@item.Id">Order</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
