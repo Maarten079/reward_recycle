@@ -39,7 +39,7 @@ namespace RewardRecycle
             });
 
             services.AddDbContextPool<ApplicationDbContext>( // replace "YourDbContext" with the class name of your DbContext
-  options => options.UseMySql("Server=localhost;Database=rewardrecycle;User=root;Password=Blabla12!;",
+  options => options.UseMySql("Server=localhost;Database=rewardrecycle;User=;Password=!;",
       mySqlOptions =>
       {
           mySqlOptions.ServerVersion(new Version(5, 7, 17), ServerType.MySql); // replace with your Server Version and Type
